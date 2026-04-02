@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الجودة: نبض الرعاية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* THE SETUP: PRESENTATION MODE */
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        p {
+            margin: 0;
+            margin-bottom: 15px;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #app-container {
+            position: relative;
+            width: 1280px;
+            height: 720px;
+            background-color: #ffffff;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        /* Navigation Bar overlay */
+        .nav-bar {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            border: 2px solid #e2e8f0;
+        }
+
+        .nav-btn {
+            background: #002B5B;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 18px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn:hover {
+            background: #11caa0;
+        }
+
+        .nav-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        #slide-counter {
+            font-weight: 800;
+            color: #002B5B;
+            font-size: 20px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* SLIDE CONTAINER */
+        .slide-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 60px;
+            z-index: 1;
+        }
+
+        .slide-container.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        /* BACKGROUND STYLING */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(17,202,160,0.05) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .slide-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* CONSISTENT TYPOGRAPHY */
+        .slide-container h1,
+        .slide-container h2,
+        .slide-container h3 {
+            color: #002B5B; 
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container th,
+        .slide-container td,
+        .slide-container .number-label {
+            color: #334155;
+        }
+
+        .slide-container h1 {
+            font-size: 80px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .slide-container .slide-title {
+            font-size: 45px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: right;
+            width: 100%;
+            border-bottom: 4px solid #11caa0;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .slide-container h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .slide-container p,
+        .slide-container li,
+        .slide-container th,
+        .slide-container td {
+            font-size: 24px;
+            line-height: 1.6;
+        }
+
+        .slide-container .subtitle {
+            font-size: 28px;
+            font-weight: 500;
+            color: #475569;
+            margin: 0 auto;
+        }
+
+        .slide-container .content-area {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* LAYOUT DEFINITIONS */
+        .title-layout {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .title-layout .highlight {
+            color: #11caa0;
+        }
+
+        .two-column {
+            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            width: 100%;
+        }
+
+        .two-column ul {
+            list-style: none;
+            margin: 0;
+            padding-right: 0;
+        }
+
+        .two-column li {
+            margin-bottom: 25px;
+            position: relative;
+            padding-right: 40px;
+        }
+
+        .two-column li i {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            color: #11caa0;
+            font-size: 28px;
+        }
+
+        .image-wrapper {
+            border-radius: 16px;
+            height: 450px;
+            max-width: 100%;
+            overflow: hidden;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,43,91,0.15);
+            border: 4px solid #f8fafc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+        }
+
+        .image-wrapper img {
+            height: 100%;
+            max-width: 100%;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        /* Tiled Layout */
+        .tiled-content {
+            align-items: stretch;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tile {
+            align-items: center;
+            background-color: #f8fafc;
+            border-radius: 16px;
+            border-top: 6px solid #002B5B;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: flex-start;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .tile .icon {
+            background-color: #e0f2fe;
+            color: #002B5B;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 25px;
+        }
+
+        /* Section Title Layout */
+        .section-title-layout {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .section-title-layout h2 {
+            font-size: 70px;
+            margin-bottom: 20px;
+            color: #002B5B;
+        }
+
+        .section-title-layout hr {
+            background-color: #11caa0;
+            border: none;
+            height: 6px;
+            margin: 30px auto;
+            width: 150px;
+            border-radius: 3px;
+        }
+
+        /* Highlighted Numbers Layout */
+        .highlight-numbers-layout {
+            align-items: center;
+        }
+        
+        .highlight-numbers-layout > div:first-child {
+            flex: 0 0 40%;
+            text-align: center;
+        }
+
+        .highlight-numbers-layout .number {
+            color: #11caa0;
+            font-size: 180px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .highlight-numbers-layout .number-label {
+            font-size: 32px;
+            font-weight: 700;
+            color: #002B5B;
+            margin-top: 10px;
+        }
+
+        /* Table Layout */
+        .table-layout {
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .table-layout table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table-layout th,
+        .table-layout td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 25px;
+            text-align: right;
+            height: 80px;
+        }
+
+        .table-layout th {
+            background-color: #002B5B;
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .table-layout tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .table-layout tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-layout td i.fa-check-circle {
+            color: #11caa0;
+            margin-left: 10px;
+        }
+
+        /* Hide class for reveal effect */
+        .invisible-content {
+            opacity: 0;
+        }
+
+        /* Custom Icon Wrappers for Games */
+        .icon-game-wrapper {
+            background: #f0f9ff;
+            border: 4px solid #bae6fd;
+        }
+        
+        .icon-game-wrapper.red {
+            background: #fff1f2;
+            border: 4px solid #fecdd3;
+        }
+
+        /* ==================================================== */
+        /* --- STYLES FOR THE "HEROES VS STARS" BATTLE GAME --- */
+        /* ==================================================== */
+        :root {
+            --team-heroes: #e63946;
+            --team-stars: #457b9d; 
+            --game-success: #2a9d8f;
+            --game-dark: #1d3557;
+            --game-light: #f1faee;
+            --game-gold: #ffb703;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #2b2b2b 0%, #111 100%);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .game-screen.active {
+            display: flex;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .game-container h1 { font-size: 60px; margin: 0 0 15px 0; color: var(--game-gold); text-shadow: 0 5px 15px rgba(0,0,0,0.5); font-family: 'Tajawal', sans-serif;}
+        .game-container p { font-size: 22px; color: #ccc; font-family: 'Tajawal', sans-serif; margin-bottom: 5px;}
+
+        .btn-main {
+            background: var(--game-gold);
+            color: var(--game-dark);
+            border: none;
+            padding: 15px 40px;
+            font-size: 26px;
+            font-weight: 800;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 0 #cc9202;
+            margin-top: 25px;
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #cc9202; }
+        .btn-main:active { transform: translateY(3px); box-shadow: 0 0 0 #cc9202; }
+
+        .battle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px 30px;
+            box-sizing: border-box;
+            background: rgba(0,0,0,0.4);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .team-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+            padding: 15px;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+        .team-box.heroes { border: 4px solid var(--team-heroes); background: rgba(230, 57, 70, 0.1); }
+        .team-box.stars { border: 4px solid var(--team-stars); background: rgba(69, 123, 157, 0.1); }
+        
+        .team-box.active-turn {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px currentcolor;
+        }
+        .team-box.heroes.active-turn { box-shadow: 0 0 25px var(--team-heroes); background: rgba(230, 57, 70, 0.3); }
+        .team-box.stars.active-turn { box-shadow: 0 0 25px var(--team-stars); background: rgba(69, 123, 157, 0.3); }
+
+        .team-name { font-size: 26px; font-weight: 800; margin-bottom: 5px; color: white;}
+        .team-score { font-size: 50px; font-weight: 800; line-height: 1; color: white;}
+
+        .vs-badge {
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--game-gold);
+            font-style: italic;
+        }
+
+        .battle-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .question-card {
+            background: white;
+            color: var(--game-dark);
+            padding: 30px 25px 25px 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            position: relative;
+            margin-top: 15px; 
+        }
+
+        .turn-indicator {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 25px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+        .turn-indicator.heroes { background: var(--team-heroes); }
+        .turn-indicator.stars { background: var(--team-stars); }
+
+        .question-text {
+            font-size: 26px; 
+            font-weight: 800;
+            margin: 10px 0 25px 0;
+            line-height: 1.4;
+            color: var(--game-dark);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px; 
+        }
+
+        .opt-btn {
+            background: var(--game-light);
+            color: var(--game-dark);
+            border: 3px solid #ccc;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .opt-btn:hover:not(:disabled) {
+            background: #e2e8f0;
+            border-color: var(--game-gold);
+            transform: translateY(-2px);
+        }
+        .opt-btn:disabled { cursor: not-allowed; }
+
+        #feedbackOverlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .feedback-icon { font-size: 80px; margin-bottom: 15px; }
+        .feedback-title { font-size: 40px; font-weight: bold; margin-bottom: 10px; }
+        .feedback-exp { font-size: 24px; line-height: 1.5; max-width: 800px; color: white;}
+        
+        .btn-continue {
+            background: white; color: var(--game-dark); padding: 12px 30px; font-size: 22px;
+            border: none; border-radius: 50px; cursor: pointer; margin-top: 25px; font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i> التالي</button>
+        <span id="slide-counter">1 / 16</span>
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()">السابق <i class="fa-solid fa-chevron-left"></i></button>
+    </div>
+
+    <!-- Slide 1: Title_Slide -->
+    <div class="slide-container active" id="slide1">
+        <div class="title-layout">
+            <h1>الجودة: <span class="highlight">نبض الرعاية</span></h1>
+            <p class="subtitle">رحلة التمريض من الأداء العادي.. إلى التميز وسلامة المريض</p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Game 1 (Telephone) -->
+    <div class="slide-container" id="slide2">
+        <h2 class="slide-title" style="width: auto;">📞 لعبة: التليفون المشفر</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #11caa0;">هل نتحدث نفس اللغة؟</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-users"></i> <strong>النشاط:</strong> نهمس بجملة طبية معقدة، ونرى كيف ستصل لآخر شخص!</li>
+                        <li><i class="fa-solid fa-triangle-exclamation"></i> <strong>الخطر:</strong> النقل الشفهي للأوامر يشوه المعلومة ويعرض حياة المريض للخطر.</li>
+                        <li><i class="fa-solid fa-file-signature"></i> <strong>الحل:</strong> سياسات التسليم (Handover) والتواصل الفعال هي صمام الأمان.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper icon-game-wrapper">
+                        <i class="fa-solid fa-ear-listen" style="font-size: 100px; color: #002B5B; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-arrow-right-arrow-left" style="font-size: 40px; color: #11caa0; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-comment-slash" style="font-size: 100px; color: #ef4444;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Game 2 (Maze) -->
+    <div class="slide-container" id="slide3">
+        <h2 class="slide-title" style="width: auto;">🚨 تحدي المتاهة: من ينقذ المريض؟</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #11caa0;">العمل في الظلام!</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-eye-slash"></i> <strong>النشاط:</strong> ممرض معصوب العينين، يوجهه زملاؤه لإنقاذ المريض بكود صوتي.</li>
+                        <li><i class="fa-solid fa-road-barrier"></i> <strong>المعنى:</strong> العصابة هي غياب السياسات، والعوائق هي الأخطاء.</li>
+                        <li><i class="fa-solid fa-book-medical"></i> <strong>الاستنتاج:</strong> سياسات الجودة (Policies) ترشدنا في زحمة الطوارئ.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper icon-game-wrapper red">
+                        <i class="fa-solid fa-map-location-dot" style="font-size: 120px; color: #e11d48; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-eye-slash" style="font-size: 80px; color: #002B5B;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Game 3 Q (Spot Errors) - Image Only -->
+    <div class="slide-container" id="slide4">
+        <h2 class="slide-title" style="width: auto;">🔍 اكتشف كارثة الجودة!</h2>
+        <div class="content-area">
+            <h3 style="color: #11caa0; margin-bottom: 20px;">أين رادار الجودة؟ (أمامكم 60 ثانية لاكتشاف 5 أخطاء كارثية)</h3>
+            <div class="image-wrapper" style="border-color: #ef4444; height: 450px; max-width: 900px; padding: 10px;">
+                <img src="١ اخطاء طبية.jpeg" alt="صورة تحتوي على أخطاء طبية مقصودة للتدريب" style="object-fit: contain;" onerror="this.outerHTML='<div style=\'display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; width:100%; background:#fff1f2; text-align:center; padding:20px;\'><i class=\'fa-solid fa-image\' style=\'font-size:80px; color:#ef4444; margin-bottom:20px;\'></i><h3 style=\'color:#e11d48;\'>مكان صورتك المرفوعة محفوظ</h3><p style=\'color:#334155; font-size:20px;\'>شاشة المعاينة لا تستطيع عرض صورك المرفوعة.<br><b>للحل:</b> حملي ملف العرض (HTML) على جهازك، وضعي صورتك (١ اخطاء طبية.jpeg) بجواره تماماً في نفس الفولدر وستظهر فوراً!</p></div>'">
+            </div>
+            <div style="background: #ef4444; color: white; padding: 10px 20px; border-radius: 50px; font-weight: bold; margin-top: 20px; font-size: 20px;">
+                <i class="fa-solid fa-stopwatch"></i> يبدأ التحدي الآن!
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Game 3 A (Spot Errors) - Answers -->
+    <div class="slide-container" id="slide5">
+        <h2 class="slide-title" style="width: auto;">🔍 الإجابة: رادار الجودة</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #ef4444; margin-bottom: 25px;">الأخطاء الخمسة الكارثية:</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 1. <strong>حواجز السرير لأسفل</strong> (خطر السقوط).</li>
+                        <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 2. تجاهل علامة <strong>(F)</strong> خلف المريض (Fall Risk).</li>
+                        <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 3. الممرضة <strong>لا ترتدي قفازات</strong> (Bare hands).</li>
+                        <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 4. <strong>سرنجة مكشوفة</strong> (بدون غطاء) على الطاولة.</li>
+                        <li><i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> 5. كيس نفايات أحمر في <strong>سلة سوداء عادية</strong>.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper" style="border-color: #ef4444; padding: 10px;">
+                        <img src="١ اخطاء طبية.jpeg" alt="صورة تحتوي على أخطاء طبية مقصودة للتدريب" style="object-fit: contain;" onerror="this.outerHTML='<div style=\'display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; width:100%; background:#fff1f2; text-align:center; padding:20px;\'><i class=\'fa-solid fa-image\' style=\'font-size:60px; color:#ef4444; margin-bottom:15px;\'></i><h3 style=\'color:#e11d48; font-size:22px;\'>مكان صورتك المرفوعة</h3><p style=\'color:#334155; font-size:16px;\'>تأكدي من وضع الصورة بجوار ملف العرض على جهازك.</p></div>'">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Section Title (Transition) -->
+    <div class="slide-container" id="slide6">
+        <div class="section-title-layout">
+            <i class="fa-solid fa-star" style="font-size: 80px; color: #11caa0; margin-bottom: 20px;"></i>
+            <h2>من الممارسة إلى التميز</h2>
+            <hr>
+            <p class="subtitle" style="max-width: 800px;">لمنع هذه الكوارث، نحتاج للعمل وفق إطار واضح..<br>نقدم لكم: الأبعاد الستة للجودة.</p>
+        </div>
+    </div>
+
+    <!-- Slide 7: Game 4 (Corners) -->
+    <div class="slide-container" id="slide7">
+        <h2 class="slide-title" style="width: auto;">🏃‍♀️ لعبة: زوايا الجودة</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #11caa0;">تحدي الحركة والسرعة</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-ticket"></i> سيستلم كل فريق "كارت موقف تمريضي".</li>
+                        <li><i class="fa-solid fa-person-running"></i> لوحات الأبعاد الستة معلقة في زوايا القاعة.</li>
+                        <li><i class="fa-solid fa-stopwatch"></i> اقرأ الموقف واركض نحو الزاوية الصحيحة!</li>
+                        <li><i class="fa-solid fa-trophy"></i> الفريق الأسرع في الزاوية الصحيحة يكسب.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper icon-game-wrapper">
+                        <i class="fa-solid fa-people-group" style="font-size: 100px; color: #002B5B; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-arrows-to-circle" style="font-size: 60px; color: #11caa0;"></i>
+                        <h3 style="margin-top: 20px; color: #002B5B;">تحدي الفرق!</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Dimensions 1 -->
+    <div class="slide-container" id="slide8">
+        <h2 class="slide-title" style="width: auto;">أبعاد الجودة الستة (الجزء الأول)</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>آمنة (Safe)</h3>
+                    <p>تقديم الرعاية دون ضرر للمريض. <strong>مثال:</strong> رفع حواجز السرير، التأكد من الهوية.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <h3>محورها المريض</h3>
+                    <p>احترام تفضيلات المريض. <strong>مثال:</strong> شرح الإجراء الطبي قبل البدء به.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-clock"></i></div>
+                    <h3>في الوقت المناسب</h3>
+                    <p>تقليل فترات الانتظار. <strong>مثال:</strong> إعطاء مسكن الألم فور طلبه دون تأخير.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Dimensions 2 -->
+    <div class="slide-container" id="slide9">
+        <h2 class="slide-title" style="width: auto;">أبعاد الجودة الستة (الجزء الثاني)</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <h3>فعالة (Effective)</h3>
+                    <p>رعاية مبنية على الدليل العلمي. <strong>مثال:</strong> غسيل الأيدي الصحيح لمنع العدوى.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <h3>عادلة (Equitable)</h3>
+                    <p>تقديم رعاية متساوية للجميع. <strong>مثال:</strong> الاهتمام بنفس الدرجة بكل المرضى.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-leaf"></i></div>
+                    <h3>ذات كفاءة (Efficient)</h3>
+                    <p>تجنب إهدار الموارد. <strong>مثال:</strong> استخدام كمية المستلزمات المطلوبة فقط.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Table Q (Safe vs Effective) -->
+    <div class="slide-container" id="slide10">
+        <h2 class="slide-title" style="width: auto;">سؤال: ما الفرق بين آمنة وفعالة؟</h2>
+        <div class="content-area">
+            <div class="table-layout">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">المقارنة</th>
+                            <th style="width: 40%;">الرعاية الآمنة (Safe)</th>
+                            <th style="width: 40%;">الرعاية الفعالة (Effective)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>الهدف</strong></td>
+                            <td>حماية المريض من "الأخطاء".</td>
+                            <td>تطبيق "العلاج الصحيح" لشفائه.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>أمثلة</strong></td>
+                            <td class="invisible-content">
+                                <i class="fa-solid fa-check-circle"></i> التأكد من سوار الهوية.<br>
+                                <i class="fa-solid fa-check-circle"></i> منع سقوط المريض.
+                            </td>
+                            <td class="invisible-content">
+                                <i class="fa-solid fa-check-circle"></i> إعطاء المضاد حسب المزرعة.<br>
+                                <i class="fa-solid fa-check-circle"></i> العناية بقرح الفراش علمياً.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>الخلاصة</strong></td>
+                            <td class="invisible-content">"First do no harm"</td>
+                            <td class="invisible-content">"افعل ما يفيد المريض علمياً"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Table A (Safe vs Effective) -->
+    <div class="slide-container" id="slide11">
+        <h2 class="slide-title" style="width: auto;">الإجابة: الفرق بين آمنة وفعالة</h2>
+        <div class="content-area">
+            <div class="table-layout">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">المقارنة</th>
+                            <th style="width: 40%;">الرعاية الآمنة (Safe)</th>
+                            <th style="width: 40%;">الرعاية الفعالة (Effective)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>الهدف</strong></td>
+                            <td>حماية المريض من "الأخطاء".</td>
+                            <td>تطبيق "العلاج الصحيح" لشفائه.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>أمثلة</strong></td>
+                            <td>
+                                <i class="fa-solid fa-check-circle"></i> التأكد من سوار الهوية.<br>
+                                <i class="fa-solid fa-check-circle"></i> منع سقوط المريض.
+                            </td>
+                            <td>
+                                <i class="fa-solid fa-check-circle"></i> إعطاء المضاد حسب المزرعة.<br>
+                                <i class="fa-solid fa-check-circle"></i> العناية بقرح الفراش علمياً.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>الخلاصة</strong></td>
+                            <td>"First do no harm"</td>
+                            <td>"افعل ما يفيد المريض علمياً"</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Game 5 Q - Supervisor -->
+    <div class="slide-container" id="slide12">
+        <h2 class="slide-title" style="width: auto;">🤝 نقاش الجودة مع المشرفة</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #11caa0;">كيف تدافعين عن تصرفك؟</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-user-nurse"></i> <strong>الموقف:</strong> المشرفة تنتقدك لتأخرك بسبب الحديث مع المريض قبل إعطائه العلاج.</li>
+                        <li><i class="fa-solid fa-microphone"></i> <strong>المطلوب:</strong> دافعي عن تصرفك باستخدام أبعاد الجودة.</li>
+                        <li class="invisible-content"><i class="fa-solid fa-lightbulb"></i> <strong>الإجابة:</strong> بُعد (محورها المريض) لتقليل التوتر، وبُعد (الرعاية الآمنة) لمراجعة الهوية.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper icon-game-wrapper">
+                        <i class="fa-solid fa-user-doctor" style="font-size: 100px; color: #002B5B; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-comments" style="font-size: 60px; color: #11caa0;"></i>
+                        <h3 style="margin-top: 20px; color: #002B5B;">النقاش المهني</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Game 5 A - Supervisor -->
+    <div class="slide-container" id="slide13">
+        <h2 class="slide-title" style="width: auto;">🤝 الإجابة: نقاش الجودة مع المشرفة</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3 style="color: #11caa0;">كيف تدافعين عن تصرفك؟</h3>
+                    <ul>
+                        <li><i class="fa-solid fa-user-nurse"></i> <strong>الموقف:</strong> المشرفة تنتقدك لتأخرك بسبب الحديث مع المريض قبل إعطائه العلاج.</li>
+                        <li><i class="fa-solid fa-microphone"></i> <strong>المطلوب:</strong> دافعي عن تصرفك باستخدام أبعاد الجودة.</li>
+                        <li><i class="fa-solid fa-lightbulb"></i> <strong>الإجابة:</strong> بُعد <strong>(محورها المريض)</strong> لتقليل التوتر، وبُعد <strong>(الرعاية الآمنة)</strong> لمراجعة الهوية والتاريخ المرضي أثناء الحديث!</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper icon-game-wrapper">
+                        <i class="fa-solid fa-user-doctor" style="font-size: 100px; color: #002B5B; margin-bottom: 20px;"></i>
+                        <i class="fa-solid fa-comments" style="font-size: 60px; color: #11caa0;"></i>
+                        <h3 style="margin-top: 20px; color: #002B5B;">النقاش المهني</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Quality Tree Pledge -->
+    <div class="slide-container" id="slide14">
+        <div class="section-title-layout">
+            <i class="fa-solid fa-seedling" style="font-size: 80px; color: #11caa0; margin-bottom: 20px;"></i>
+            <h2>شجرة الجودة</h2>
+            <hr>
+            <p class="subtitle" style="max-width: 900px; color: #002B5B; font-weight: bold;">أنا الممرض(ة) أصنع الفرق. الجودة تبدأ بقرار شخصي.</p>
+            <p class="subtitle" style="margin-top: 15px;">اكتبوا تعهداتكم على الكروت المطبوعة وألصقوها على الشجرة!</p>
+        </div>
+    </div>
+
+    <!-- Slide 15: Heroes VS Stars Embedded Game (NEW) -->
+    <div class="slide-container" id="slide15" style="padding: 20px;">
+        <div class="game-container">
+            <!-- Screen 1: Start Screen -->
+            <div class="game-screen active" id="startScreen">
+                <i class="fa-solid fa-trophy" style="font-size: 100px; color: var(--game-gold); margin-bottom: 15px;"></i>
+                <h1>تحدي أبطال الجودة</h1>
+                <p>المواجهة الحاسمة بين <span style="color: var(--team-heroes); font-weight:bold;">فريق الأبطال</span> و <span style="color: var(--team-stars); font-weight:bold;">فريق النجوم</span></p>
+                <p>أسئلة تعتمد على معايير سلامة المرضى والجودة العالمية.</p>
+                <button class="btn-main" onclick="startGame()">ابدأ المعركة!</button>
+            </div>
+
+            <!-- Screen 2: Battle Screen -->
+            <div class="game-screen" id="battleScreen" style="padding: 0; justify-content: flex-start;">
+                <div class="battle-header">
+                    <div class="team-box heroes active-turn" id="boxHeroes">
+                        <div class="team-name">فريق الأبطال</div>
+                        <div class="team-score" id="scoreHeroes">0</div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="team-box stars" id="boxStars">
+                        <div class="team-name">فريق النجوم</div>
+                        <div class="team-score" id="scoreStars">0</div>
+                    </div>
+                </div>
+
+                <div class="battle-area">
+                    <div class="question-card">
+                        <div class="turn-indicator heroes" id="turnIndicator">دور فريق الأبطال</div>
+                        <div class="question-text" id="questionText">جاري تحميل السؤال...</div>
+                        <div class="options-grid" id="optionsGrid">
+                            <!-- Options generated via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Overlay -->
+                <div id="feedbackOverlay">
+                    <div class="feedback-icon" id="fbIcon"></div>
+                    <div class="feedback-title" id="fbTitle"></div>
+                    <div class="feedback-exp" id="fbExp"></div>
+                    <button class="btn-continue" onclick="nextTurn()">استمرار <i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+            </div>
+
+            <!-- Screen 3: Result Screen -->
+            <div class="game-screen" id="resultScreen">
+                <i class="fa-solid fa-crown" style="font-size: 100px; color: var(--game-gold); margin-bottom: 20px;"></i>
+                <h1>انتهت المواجهة!</h1>
+                <p id="winnerAnnouncement" style="font-size: 35px; font-weight: bold; margin: 20px 0;"></p>
+                <div style="display: flex; gap: 40px; margin: 20px 0; font-size: 30px;">
+                    <div>الأبطال: <span id="finalScoreHeroes" style="color: var(--team-heroes); font-weight: bold;">0</span></div>
+                    <div>النجوم: <span id="finalScoreStars" style="color: var(--team-stars); font-weight: bold;">0</span></div>
+                </div>
+                <button class="btn-main" onclick="resetGame()">العب من جديد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Conclusion -->
+    <div class="slide-container" id="slide16">
+        <h2 class="slide-title" style="width: auto;">الخلاصة: لماذا الجودة؟</h2>
+        <div class="content-area">
+            <div class="highlight-numbers-layout two-column">
+                <div>
+                    <div class="number">100%</div>
+                    <div class="number-label">حماية وأمان</div>
+                </div>
+                <div>
+                    <h3 style="color: #002B5B;">الجودة ليست أوراقاً!</h3>
+                    <p>تطبيق الجودة يضمن <strong>100% حماية لترخيصك المهني</strong>، و <strong>100% أمان للمريض</strong>.</p>
+                    <p>الجودة هي الدرع الذي يحميكِ كخط دفاع أخير في بيئة العمل المليئة بالضغوطات.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- End of app-container -->
+
+<script>
+    // --- Presentation Logic ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide-container');
+    const counter = document.getElementById('slide-counter');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+
+    function updateSlides() {
+        slides.forEach((slide, index) => {
+            slide.classList.remove('active');
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            }
+        });
+        counter.innerText = (currentSlide + 1) + ' / ' + slides.length;
+        
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === slides.length - 1;
+    }
+
+    window.nextSlide = function() {
+        if (currentSlide < slides.length - 1) {
+            currentSlide++;
+            updateSlides();
+        }
+    }
+
+    window.prevSlide = function() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateSlides();
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            nextSlide(); 
+        } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            prevSlide(); 
+        }
+    });
+
+    updateSlides();
+
+    // --- Embedded Game Logic ---
+    const questions = [
+        {
+            q: "ما هما المعرّفان الأساسيان والمقبولان عالمياً لتأكيد هوية المريض قبل أي إجراء؟",
+            options: ["الاسم الرباعي ورقم الغرفة/السرير", "الاسم الرباعي ورقم الملف الطبي (MRN)", "رقم الملف الطبي وتاريخ الدخول", "الاسم الأول واسم الطبيب المعالج"],
+            correct: 1,
+            exp: "رقم الغرفة أو السرير يتغير باستمرار ولا يجوز استخدامه للتعريف. التعريف الصحيح هو الاسم الرباعي ورقم الملف الطبي."
+        },
+        {
+            q: "عند وجود دواءين يتشابهان في الشكل والنطق (LASA)، ما هو الإجراء الصحيح لمنع الخطأ؟",
+            options: ["وضعهما بجوار بعضهما لتسهيل الوصول", "تمييزهما بملصقات تحذيرية ملونة وفصلهما مكانياً", "الاعتماد كلياً على ذاكرة طاقم التمريض", "كتابة الاسم باللغة العربية فقط لتجنب الخلط"],
+            correct: 1,
+            exp: "الفصل المكاني والتمييز البصري (TALLman lettering والملصقات الملونة) هي المعايير المعتمدة لمنع أخطاء الأدوية المتشابهة."
+        },
+        {
+            q: "حرف الـ (I) في بداية نظام التواصل الفعال (ISBAR) يرمز إلى ماذا؟",
+            options: ["Information (معلومات المريض)", "Illness (المرض الحالي)", "Introduction (التعريف بالمتحدث والقسم)", "Immediate (التدخل الفوري)"],
+            correct: 2,
+            exp: "نظام ISBAR يبدأ بـ Introduction حيث يقوم المتصل بالتعريف بنفسه، ومسماه الوظيفي، والقسم الذي يتحدث منه قبل ذكر حالة المريض."
+        },
+        {
+            q: "ما هو الإجراء (Time-out) الذي يتم فوراً قبل البدء بـ 'شق الجلد' في العمليات الجراحية؟",
+            options: ["تخدير المريض", "توقيع المريض على الموافقة", "توقف الفريق للتأكد من المريض والإجراء والمكان", "غسل الأيدي الجراحي"],
+            correct: 2,
+            exp: "الـ Time-out هو توقف إجباري لكل الفريق داخل غرفة العمليات بصوت مسموع لتأكيد كافة بيانات الإجراء قبل البدء."
+        },
+        {
+            q: "عند اكتشاف 'خطأ طبي وشيك' لم يؤدِ لضرر (Near Miss)، ما هو التصرف السليم؟",
+            options: ["تجاهله تماماً طالما لم يتضرر المريض", "الإبلاغ للتحقيق فيه وتحديد الفجوات لمنع تكراره", "توبيخ الشخص الذي كاد أن يخطئ علناً", "إخفاء الأمر عن إدارة الجودة"],
+            correct: 1,
+            exp: "ليس كل Near Miss يتطلب RCA معقد، ولكن الإبلاغ عنه ضروري للتحقيق السريع (Investigation) وتحديد الفجوات في النظام وإصلاحها."
+        },
+        {
+            q: "تلقيت أمراً 'شفهياً' طارئاً من الطبيب بإعطاء دواء. ما هو الإجراء السليم لتطبيقه؟",
+            options: ["تنفيذ الأمر فوراً دون إضاعة الوقت", "تلقيه، كتابته، وقراءته عكسياً للطبيب للتأكيد (VORB)", "طلب الأمر مكتوباً عبر الواتساب", "إعطاء الدواء وترك التوثيق لنهاية الشيفت"],
+            correct: 1,
+            exp: "معيار الأوامر الشفهية يلزمك بـ (تلقي الأمر، كتابته، قراءته مرة أخرى للطبيب، وتلقي التأكيد منه) VORB لمنع أخطاء السمع."
+        }
+    ];
+
+    let scoreHeroes = 0;
+    let scoreStars = 0;
+    let currentTurn = 'heroes';
+    let currentQIndex = 0;
+
+    window.startGame = function() {
+        document.getElementById('startScreen').classList.remove('active');
+        document.getElementById('battleScreen').classList.add('active');
+        renderQuestion();
+    }
+
+    window.resetGame = function() {
+        scoreHeroes = 0;
+        scoreStars = 0;
+        currentTurn = 'heroes';
+        currentQIndex = 0;
+        document.getElementById('scoreHeroes').innerText = '0';
+        document.getElementById('scoreStars').innerText = '0';
+        document.getElementById('resultScreen').classList.remove('active');
+        document.getElementById('startScreen').classList.add('active');
+    }
+
+    function renderQuestion() {
+        if (currentQIndex >= questions.length) {
+            endGame();
+            return;
+        }
+
+        const q = questions[currentQIndex];
+        const turnInd = document.getElementById('turnIndicator');
+        const boxHeroes = document.getElementById('boxHeroes');
+        const boxStars = document.getElementById('boxStars');
+
+        if (currentTurn === 'heroes') {
+            turnInd.innerText = "دور فريق الأبطال";
+            turnInd.className = "turn-indicator heroes";
+            boxHeroes.classList.add('active-turn');
+            boxStars.classList.remove('active-turn');
+        } else {
+            turnInd.innerText = "دور فريق النجوم";
+            turnInd.className = "turn-indicator stars";
+            boxStars.classList.add('active-turn');
+            boxHeroes.classList.remove('active-turn');
+        }
+
+        document.getElementById('questionText').innerText = q.q;
+        const grid = document.getElementById('optionsGrid');
+        grid.innerHTML = '';
+        
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerText = opt;
+            btn.onclick = () => handleAnswer(idx, btn);
+            grid.appendChild(btn);
+        });
+    }
+
+    window.handleAnswer = function(selectedIndex, btnElement) {
+        document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+        const q = questions[currentQIndex];
+        const isCorrect = (selectedIndex === q.correct);
+
+        if (isCorrect) {
+            btnElement.style.background = 'var(--game-success)';
+            btnElement.style.color = 'white';
+            btnElement.style.borderColor = 'var(--game-success)';
+            
+            if (currentTurn === 'heroes') {
+                scoreHeroes += 10;
+                document.getElementById('scoreHeroes').innerText = scoreHeroes;
+            } else {
+                scoreStars += 10;
+                document.getElementById('scoreStars').innerText = scoreStars;
+            }
+            showFeedback(true, q.exp);
+        } else {
+            btnElement.style.background = 'var(--team-heroes)';
+            btnElement.style.color = 'white';
+            btnElement.style.borderColor = 'var(--team-heroes)';
+            
+            const allBtns = document.querySelectorAll('.opt-btn');
+            allBtns[q.correct].style.background = 'var(--game-success)';
+            allBtns[q.correct].style.color = 'white';
+            allBtns[q.correct].style.borderColor = 'var(--game-success)';
+            
+            showFeedback(false, q.exp);
+        }
+    }
+
+    function showFeedback(isCorrect, explanation) {
+        const overlay = document.getElementById('feedbackOverlay');
+        const icon = document.getElementById('fbIcon');
+        const title = document.getElementById('fbTitle');
+        const exp = document.getElementById('fbExp');
+
+        if (isCorrect) {
+            icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--game-success);"></i>';
+            title.innerText = "إجابة صحيحة!";
+            title.style.color = "var(--game-success)";
+        } else {
+            icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color: var(--team-heroes);"></i>';
+            title.innerText = "إجابة خاطئة!";
+            title.style.color = "var(--team-heroes)";
+        }
+
+        exp.innerText = explanation;
+        setTimeout(() => { overlay.style.display = 'flex'; }, 800);
+    }
+
+    window.nextTurn = function() {
+        document.getElementById('feedbackOverlay').style.display = 'none';
+        currentTurn = (currentTurn === 'heroes') ? 'stars' : 'heroes';
+        currentQIndex++;
+        renderQuestion();
+    }
+
+    function endGame() {
+        document.getElementById('battleScreen').classList.remove('active');
+        document.getElementById('resultScreen').classList.add('active');
+        document.getElementById('finalScoreHeroes').innerText = scoreHeroes;
+        document.getElementById('finalScoreStars').innerText = scoreStars;
+
+        const announcement = document.getElementById('winnerAnnouncement');
+        if (scoreHeroes > scoreStars) {
+            announcement.innerHTML = 'الفائز هو <span style="color: var(--team-heroes);">فريق الأبطال</span>! 🏆';
+        } else if (scoreStars > scoreHeroes) {
+            announcement.innerHTML = 'الفائز هو <span style="color: var(--team-stars);">فريق النجوم</span>! 🏆';
+        } else {
+            announcement.innerHTML = 'النتيجة <span style="color: var(--game-gold);">تعادل</span> بين الفريقين! 🤝';
+        }
+    }
+</script>
+
+</body>
+</html>
